@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Estoque - Projeto de Banco de Dados</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Controle de Estoque</h1>
+        <p class="subtitle">Gerenciamento de Produtos - Parte 2 / Parte 1</p>
+
+        <div class="actions">
+            <button id="carregar-produtos">Carregar Produtos do Banco</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nome do Produto</th>
+                        <th>Marca</th>
+                        <th>Preço Venda</th>
+                        <th>Qtd. Estoque</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-produtos">
+                    <!-- Os dados do backend vão aparecer aqui dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
