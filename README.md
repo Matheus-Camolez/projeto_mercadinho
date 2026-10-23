@@ -6,7 +6,7 @@
 
 
 
-Autor: Matheus Augusto Camolez de Oliveira
+Autor: Matheus Augusto Camolez de Oliveira e Silmari Garcia
 
 Repositório: https://github.com/Matheus-Camolez/projeto_mercadinho
 
