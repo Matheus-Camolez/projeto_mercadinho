@@ -3,34 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Estoque - Projeto de Banco de Dados</title>
+    <title>Sistema de Controle de Estoque - Mercado</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Sistema de Controle de Estoque</h1>
-        <p class="subtitle">Gerenciamento de Produtos - Parte 2 / Parte 1</p>
+    <div class="main-wrapper">
+        <header class="app-header">
+            <h1>Controle de Estoque & Vendas</h1>
+            <p>Gerenciamento Completo para Pequenos Mercados</p>
+        </header>
 
-        <div class="actions">
-            <button id="carregar-produtos">Carregar Produtos do Banco</button>
-        </div>
+        <!-- BARRA DE NAVEGAÇÃO HORIZONTAL (ABAS) -->
+        <nav class="nav-bar">
+            <button class="nav-tab active" onclick="mudarAba('produtos')">📦 Produtos</button>
+            <button class="nav-tab" onclick="mudarAba('entradas')">📥 Entradas</button>
+            <button class="nav-tab" onclick="mudarAba('lotes')">⏳ Lotes & Validade</button>
+            <button class="nav-tab" onclick="mudarAba('saidas')">📤 Saídas (Vendas)</button>
+            <button class="nav-tab" onclick="mudarAba('clientes')">👥 Clientes</button>
+            <button class="nav-tab" onclick="mudarAba('dividas')">💳 Dívidas (Fiado)</button>
+            <button class="nav-tab" onclick="mudarAba('pagamentos')">💵 Pagamentos</button>
+        </nav>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Nome do Produto</th>
-                        <th>Marca</th>
-                        <th>Preço Venda</th>
-                        <th>Qtd. Estoque</th>
-                    </tr>
-                </thead>
-                <tbody id="tabela-produtos">
-                    <!-- Os dados do backend vão aparecer aqui dinamicamente -->
-                </tbody>
-            </table>
-        </div>
+        <!-- CONTEÚDO DAS ABAS -->
+        <main class="content-container">
+            
+            <!-- ABA 1: PRODUTOS -->
+            <section id="tab-produtos" class="tab-content active">
+                <div class="module-card">
+                    <h2>Gerenciamento de Produtos</h2>
+                    <form id="produto-form" class="form-grid">
+                        <input type="text" id="nome_produto" placeholder="Nome do Produto" required>
+                        <input type="text" id="marca" placeholder="Marca" required>
+                        <input type="text" id="codigo_barras" placeholder="Código de Barras" required>
+                        <select id="codigo_categoria" required><option value="">Selecione a Categoria</option></select>
+                        <input type="number" step="0.01" id="preco_venda" placeholder="Preço Venda (R$)" required>
+                        <input type="number" id="quantd_estoque" placeholder="Qtd. Estoque" required>
+                        <input type="number" id="estoque_minimo" placeholder="Estoque Mín." required>
+                        <input type="text" id="peso_produto" placeholder="Peso (ex: 1kg)" required>
+                        <button type="submit" class="btn-primary">Salvar Produto</button>
+                    </form>
+                    <button onclick="carregarProdutos()" class="btn-load">Atualizar Lista</button>
+                    <div class="table-responsive">
+                        <table id="tabela-produtos">
+                            <thead><tr><th>Cód</th><th>Nome</th><th>Marca</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Mín.</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 2: ENTRADAS -->
+            <section id="tab-entradas" class="tab-content">
+                <div class="module-card">
+                    <h2>Entradas de Estoque & Itens</h2>
+                    <form id="entrada-form" class="form-grid">
+                        <input type="date" id="data_entrada" required>
+                        <select id="codigo_fornecedor" required><option value="">Selecione o Fornecedor</option></select>
+                        <button type="submit" class="btn-primary">Registrar Cabeçalho Entrada</button>
+                    </form>
+                    
+                    <h3 style="margin-top:20px;">Adicionar Item na Entrada (Histórico de Preço)</h3>
+                    <form id="item-entrada-form" class="form-grid">
+                        <input type="number" id="ie_cod_entrada" placeholder="Cód. Entrada" required>
+                        <select id="ie_cod_produto" required><option value="">Selecione o Produto</option></select>
+                        <input type="number" step="0.001" id="quantd_recebida" placeholder="Qtd Recebida" required>
+                        <input type="number" step="0.01" id="preco_compra" placeholder="Preço Compra (R$)" required>
+                        <button type="submit" class="btn-primary">Vincular Item à Entrada</button>
+                    </form>
+
+                    <button onclick="carregarEntradas(); carregarItensEntrada();" class="btn-load">Atualizar Registros</button>
+                    <div class="table-responsive">
+                        <table id="tabela-entradas">
+                            <thead><tr><th>Cód Ent.</th><th>Data</th><th>Fornecedor</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                        <table id="tabela-itens-entrada" style="margin-top:15px;">
+                            <thead><tr><th>Entrada</th><th>Produto</th><th>Qtd Recebida</th><th>Preço Compra</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 3: LOTES -->
+            <section id="tab-lotes" class="tab-content">
+                <div class="module-card">
+                    <h2>Controle de Lotes e Validade</h2>
+                    <form id="lote-form" class="form-grid">
+                        <input type="text" id="numero_lote" placeholder="Número do Lote" required>
+                        <input type="date" id="data_validade" required>
+                        <input type="number" step="0.001" id="quantidade_lote" placeholder="Qtd do Lote" required>
+                        <input type="number" id="lote_codigo_entrada" placeholder="Cód. Entrada" required>
+                        <select id="lote_codigo_produto" required><option value="">Selecione o Produto</option></select>
+                        <button type="submit" class="btn-primary">Registrar Lote</button>
+                    </form>
+                    <button onclick="carregarLotes()" class="btn-load">Atualizar Lotes</button>
+                    <div class="table-responsive">
+                        <table id="tabela-lotes">
+                            <thead><tr><th>Lote</th><th>Produto</th><th>Validade</th><th>Qtd Lote</th><th>Cód Entrada</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 4: SAÍDAS -->
+            <section id="tab-saidas" class="tab-content">
+                <div class="module-card">
+                    <h2>Saídas de Estoque (Vendas) & Itens</h2>
+                    <form id="saida-form" class="form-grid">
+                        <input type="date" id="data_saida" required>
+                        <select id="saida_codigo_cliente" required><option value="">Selecione o Cliente (Opcional)</option></select>
+                        <button type="submit" class="btn-primary">Registrar Cabeçalho Saída</button>
+                    </form>
+
+                    <h3 style="margin-top:20px;">Adicionar Item na Saída (Baixa por Lote)</h3>
+                    <form id="item-saida-form" class="form-grid">
+                        <input type="number" id="is_codigo_saida" placeholder="Cód. Saída" required>
+                        <select id="is_codigo_lote" required><option value="">Selecione o Lote de Origem</option></select>
+                        <input type="number" step="0.001" id="quantidade_saida" placeholder="Qtd Retirada" required>
+                        <input type="number" step="0.01" id="preco_saida" placeholder="Preço Praticado (R$)" required>
+                        <button type="submit" class="btn-primary">Adicionar Item à Saída</button>
+                    </form>
+
+                    <button onclick="carregarSaidas(); carregarItensSaida();" class="btn-load">Atualizar Saídas</button>
+                    <div class="table-responsive">
+                        <table id="tabela-saidas">
+                            <thead><tr><th>Cód Saída</th><th>Data</th><th>Cliente</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                        <table id="tabela-itens-saida" style="margin-top:15px;">
+                            <thead><tr><th>Saída</th><th>Lote Origem</th><th>Qtd Retirada</th><th>Preço Praticado</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 5: CLIENTES -->
+            <section id="tab-clientes" class="tab-content">
+                <div class="module-card">
+                    <h2>Cadastro de Clientes</h2>
+                    <form id="cliente-form" class="form-grid">
+                        <input type="text" id="cliente_nome" placeholder="Nome Completo" required>
+                        <input type="text" id="cliente_contato" placeholder="Contato / Telefone" required>
+                        <button type="submit" class="btn-primary">Cadastrar Cliente</button>
+                    </form>
+                    <button onclick="carregarClientes()" class="btn-load">Atualizar Clientes</button>
+                    <div class="table-responsive">
+                        <table id="tabela-clientes">
+                            <thead><tr><th>Cód</th><th>Nome</th><th>Contato</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 6: DÍVIDAS -->
+            <section id="tab-dividas" class="tab-content">
+                <div class="module-card">
+                    <h2>Controle de Dívidas (Fiado)</h2>
+                    <form id="divida-form" class="form-grid">
+                        <input type="number" id="divida_cod_saida" placeholder="Cód. Saída Associada" required>
+                        <input type="number" step="0.01" id="valor_divida" placeholder="Valor da Dívida (R$)" required>
+                        <input type="date" id="data_divida" required>
+                        <input type="date" id="data_vencimento" required>
+                        <select id="situacao_divida" required>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Pago">Pago</option>
+                            <option value="Atrasado">Atrasado</option>
+                        </select>
+                        <button type="submit" class="btn-primary">Registrar Dívida</button>
+                    </form>
+                    <button onclick="carregarDividas()" class="btn-load">Atualizar Dívidas</button>
+                    <div class="table-responsive">
+                        <table id="tabela-dividas">
+                            <thead><tr><th>Cód Dívida</th><th>Cód Saída</th><th>Cliente</th><th>Valor</th><th>Vencimento</th><th>Situação</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 7: PAGAMENTOS -->
+            <section id="tab-pagamentos" class="tab-content">
+                <div class="module-card">
+                    <h2>Gestão de Pagamentos (Parciais ou Totais)</h2>
+                    <form id="pagamento-form" class="form-grid">
+                        <input type="hidden" id="edit_cod_pagamento">
+                        <input type="number" id="pag_cod_divida" placeholder="Cód. Dívida" required>
+                        <input type="date" id="data_pagamento" required>
+                        <input type="number" step="0.01" id="valor_pago" placeholder="Valor Pago (R$)" required>
+                        <select id="forma_pagamento" required>
+                            <option value="Dinheiro">Dinheiro</option>
+                            <option value="PIX">PIX</option>
+                            <option value="Cartão de Débito">Cartão de Débito</option>
+                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                        </select>
+                        <button type="submit" id="btn-salvar-pagamento" class="btn-primary">Registrar Pagamento</button>
+                    </form>
+                    <button onclick="carregarPagamentos()" class="btn-load">Atualizar Pagamentos</button>
+                    <div class="table-responsive">
+                        <table id="tabela-pagamentos">
+                            <thead><tr><th>Cód Pag.</th><th>Cód Dívida</th><th>Data</th><th>Valor Pago</th><th>Forma</th><th>Ações</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
     </div>
 
     <script src="script.js"></script>
